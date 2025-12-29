@@ -1,0 +1,77 @@
+drop table if exists zepto;
+
+create table zepto(
+sku_id SERIAL PRIMARY KEY,
+category VARCHAR(120),
+name VARCHAR(150) NOT NULL,
+mrp NUMERIC(8,2),
+discountPercent Numeric(5,2),
+availableQuantity INTEGER,
+discountedSellingPrice NUMERIC(8,2),
+weightInGms INTEGER,
+outOfStock Boolean,
+quantity INTEGER
+)
+
+--data exploration
+--check all data
+select * from zepto limit 10;
+
+--check every row imported or not
+select count(*) from zepto;
+
+--null values
+select * from zepto 
+where name IS NULL
+or
+category IS NULL
+or
+mrp IS NULL
+or
+discountPercent IS NULL
+or
+availableQuantity IS NULL
+or
+weightInGms IS NULL
+or
+outOfStock IS NULL
+or
+quantity IS NULL;
+
+
+-- different product category
+SELECT DISTINCT category
+FROM zepto
+order by category;
+
+
+-- product in stock vs. out of stock
+SELECT outOfStock, Count(sku_id)
+FROM zepto
+group by outOfStock;
+
+--product names present multiple time
+SELECT name, COUNT(sku_id) as "Number of SKUs"
+from zepto
+group by name
+HAVING count(sku_id)>1
+order by count(sku_id) desc;
+
+--data cleaning
+
+-- check products with price = 0
+
+SELECT * from zepto
+WHERE mrp = 0 OR discountedSellingPrice = 0;
+
+-- delete products with mrp = 0
+DELETE from zepto
+WHERE mrp = 0;
+
+-- convert mrp from paise to rupees
+UPDATE zepto
+SET mrp = mrp/100.0,
+discountedSellingPrice = discountedSellingPrice/100.0;
+
+SELECT mrp, discountedSellingPrice from zepto;
+
